@@ -132,6 +132,7 @@ BEGIN
       LEFT JOIN inviters_nvtr ON nvtr_id = rlt_nvtr_id 
     WHERE nvt_diabled = 0 AND nvt_typ_id = typ_id AND nvt_dmn_id = dmn_id 
       AND nvt_id >= start_id AND nvt_id < end_id;
+        ORDER BY nvt_id;
 END;//
 
 
@@ -157,4 +158,31 @@ BEGIN
   SELECT dmn_id, dmn_domain
     FROM domains_dmn 
         WHERE dmn_photo = photo;
+            ORDER BY dmn_id;
+END;//
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS `get_types`//
+CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `get_types`()
+BEGIN
+  SELECT typ_id, typ_type
+    FROM types_typ
+        ORDER BY typ_id;
+END;//
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS `get_emails_not_sent`//
+CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `get_emails_not_sent`()
+BEGIN
+  SELECT `sndl_id` 
+    FROM `sendlist_sndl` 
+        WHERE `sndl_done` = 0
+            ORDER BY `sndl_id`;
+END;//
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS `clear_email_list`//
+CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `clear_email_list`()
+BEGIN
+  TRUNCATE TABLE `sendlist_sndl`;
 END;//
