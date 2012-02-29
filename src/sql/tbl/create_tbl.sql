@@ -96,3 +96,16 @@ CREATE TABLE IF NOT EXISTS `domains_dmn` (
   PRIMARY KEY  (`dmn_id`),
   UNIQUE INDEX (`dmn_domain`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Domains table' AUTO_INCREMENT=1;
+
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `sendlist_sndl`
+--
+
+CREATE TABLE IF NOT EXISTS `sendlist_sndl` (
+  `sndl_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Id of the invitees',
+  `sndl_done` TINYINT(1) NOT NULL COMMENT 'If the email has been sent already',
+  INDEX (`sndl_id`),
+  INDEX (`sndl_done`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Email list table';

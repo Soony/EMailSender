@@ -10,14 +10,14 @@ public class Invitee implements Serializable{
     
     private static final long serialVersionUID = 1L;
     
-    private int id;              //Invitee's id
+    private int id;                 //Invitee's id
     private String email;           //Invitee's email
     private String domain;          //Invitee's domain
     private String name;            //Invitee's name
-    private Boolean gender;          //Invitee's gender
+    private Boolean gender;         //Invitee's gender
     private String inviter_name;    //Inviter's name
     private String inviter_email;   //Inviter's email
-    private Boolean inviter_gender;  //Inviter's gender
+    private Boolean inviter_gender; //Inviter's gender
     
     /**
      * @return the id
@@ -129,4 +129,20 @@ public class Invitee implements Serializable{
         this.inviter_gender = inviter_gender;
     }
     
+    /**
+     * Display the member values in string
+     * @return 
+     */
+    @Override
+    public String toString()
+    {
+        return "Id: " + this.id 
+                + "; Name: " + this.name
+                + "; Email: " + this.email
+                + "; Domain: " + this.domain
+                + "; Gender: " + this.gender
+                + "; Inviter Name: " + this.inviter_name
+                + "; Inviter Email: " + this.inviter_email
+                + "; Inviter Gender: " + this.inviter_gender;
+    }
 }

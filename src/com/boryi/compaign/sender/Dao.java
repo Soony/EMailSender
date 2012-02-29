@@ -171,4 +171,39 @@ public class Dao {
         }
         return list;
     }
+    
+    /**
+     * Get the types
+     * 
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SQLException  
+     */
+    public Hashtable<Integer, String> GetTypes()
+            throws ClassNotFoundException, SQLException
+    {
+        Hashtable<Integer, String> list = new Hashtable<Integer, String>();
+        
+        Class<?> forName = Class.forName("com.mysql.jdbc.Driver");
+
+        Connection conn = DriverManager.getConnection(dbConnStr);
+
+        if(conn.isClosed())
+        {
+            throw new SQLException("Closed connection");
+        }
+
+        CallableStatement sm = conn.prepareCall("{ call get_types()}");
+
+        ResultSet rs = sm.executeQuery();
+
+        if (rs != null)
+        {
+            while (rs.next())
+            {
+                list.put(rs.getInt("nvt_id"), rs.getString("nvt_id"));
+            }
+        }
+        return list;
+    }
 }

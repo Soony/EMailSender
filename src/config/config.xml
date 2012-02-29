@@ -9,6 +9,8 @@
         <MaxKey>3</MaxKey>
         <StartId>1</StartId>
         <EndId>1000</EndId>    
+        <CompaignType>new</CompaignType>
+        <!-- new; unopened; disable -->
         <Types>
             <Type>
                 <Type>Friend</Type>

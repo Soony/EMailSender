@@ -35,6 +35,9 @@ public class SaveLoader {
         
         in.close();
         
+        File file = new File(filename);
+        file.delete();
+        
         return invitee;
     }
 }

@@ -41,7 +41,6 @@ public class AutoMailSending {
     private int startId;
     private int endId;
     
-    
     private static Logger eventLogger = Logger.getLogger("EventLogger");
 
     static {
@@ -50,6 +49,9 @@ public class AutoMailSending {
     
     public static void main(String[] args)
     {
+        List hm = new ArrayList();
+        
+        
         AutoMailSending c = new AutoMailSending();
         c.OnRun();
     }
@@ -115,7 +117,7 @@ public class AutoMailSending {
 
     private void SendEmail(Invitee email)
             throws MessagingException, NoSuchProviderException {
-        
+
         String subject = this.emailSubject;
         String format = this.emailFormat;
         
