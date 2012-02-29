@@ -22,7 +22,6 @@ public class AutoMailSending {
     private String mailServerName;//mail server
     private String mailUserName;//sender's email username
     private String mailPassword;//sender's email password
-    private String csvFile;//csvFile path
     private String emailFormat;//email's body
     private String emailSubject;//email's subject
     private String dbConnStr;//database connection string
@@ -66,7 +65,6 @@ public class AutoMailSending {
             mailServerName = config.getMailServerName();
             mailUserName = config.getMailUserName();
             mailPassword = config.getMailPassword();
-            csvFile = config.getCsvFile();
             emailFormat = config.getEmailFormat();
             dbConnStr = config.getConnection();
             spGetEmailList = config.getSpGetEmailList();
