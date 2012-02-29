@@ -1,0 +1,1 @@
+mysqladmin -u root -p drop boryi_01_campaign
