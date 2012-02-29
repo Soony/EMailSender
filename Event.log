@@ -1,0 +1,1 @@
+2012-02-29 13:19:03,125 ERROR | main | com.boryi.compaign.sender.AutoMailSending | 72 | main | java.io.NotSerializableException: com.boryi.compaign.sender.Invitee
