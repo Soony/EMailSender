@@ -3,7 +3,7 @@
     <MailHost>mail.boryi.com</MailHost>
     <MailUser>yilong.xie@boryi.com</MailUser>
     <MailPassword>********</MailPassword>
-    <DbConnStr>jdbc:mysql://localhost/boryi_01_campaign?user=cmpgn_master&amp;password=********</DbConnStr>
+    <DbConnStr>jdbc:mysql://localhost/boryi_01_campaign?user=cmpgn_master&amp;password=p@ssw0rd</DbConnStr>
     <IntervalSeconds>60</IntervalSeconds>
     <MaxKey>3</MaxKey>
     <StartId>1</StartId>

@@ -50,7 +50,7 @@ public class Dao {
             }
 
             CallableStatement sm = conn.prepareCall(
-                    "{ call " + this.spGetEmailList + "(?,?,?,?)}");
+                    "{ call get_invitees(?,?,?,?)}");
             
             sm.setInt(1, typeId);
             sm.setInt(2, domainId);
@@ -142,7 +142,7 @@ public class Dao {
         {
             while (rs.next())
             {
-                list.put(rs.getInt("nvt_id"), rs.getString("nvt_id"));
+                list.put(rs.getInt("dmn_id"), rs.getString("dmn_domain"));
             }
         }
         return list;

@@ -48,7 +48,7 @@ public class Invitee implements Serializable{
         
         if (email != null)
         {
-            this.domain = email.substring(email.indexOf("@"));
+            this.domain = email.substring(email.indexOf("@") + 1);
         }
     }
 

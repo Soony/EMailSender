@@ -130,8 +130,8 @@ BEGIN
   SELECT nvt_id, nvt_email, nvt_name, nvt_gender, nvtr_email, nvtr_name, nvtr_gender 
     FROM invitees_nvt LEFT JOIN relations_rlt ON nvt_id = rlt_nvt_id 
       LEFT JOIN inviters_nvtr ON nvtr_id = rlt_nvtr_id 
-    WHERE nvt_diabled = 0 AND nvt_typ_id = typ_id AND nvt_dmn_id = dmn_id 
-      AND nvt_id >= start_id AND nvt_id < end_id;
+    WHERE nvt_disabled = 0 AND nvt_typ_id = typ_id AND nvt_dmn_id = dmn_id 
+      AND nvt_id >= start_id AND nvt_id < end_id
         ORDER BY nvt_id;
 END;//
 
@@ -157,7 +157,7 @@ photo TINYINT(1))
 BEGIN
   SELECT dmn_id, dmn_domain
     FROM domains_dmn 
-        WHERE dmn_photo = photo;
+        WHERE dmn_photo = photo
             ORDER BY dmn_id;
 END;//
 

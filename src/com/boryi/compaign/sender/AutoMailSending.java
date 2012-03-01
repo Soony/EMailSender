@@ -25,7 +25,6 @@ public class AutoMailSending {
     private String mailPassword;//sender's email password
     private String emailFormat;//email's body
     private String emailSubject;//email's subject
-    private String dbConnStr;//database connection string
     private String spGetEmailList;
     private String spMarkEmailAsSent;
     private Date runDate;
@@ -39,10 +38,6 @@ public class AutoMailSending {
     private Boolean needRetry = false;
     private int maxRetry = 3;
     private int retry = 1;
-    private int interval;
-    private int maxKey;
-    private int startId;
-    private int endId;
     
     private Hashtable<Integer, String> domains;
     
@@ -65,7 +60,7 @@ public class AutoMailSending {
             config = new Config();
             config.read("config.xml");
            
-            dao = new Dao(dbConnStr);
+            dao = new Dao(config.getConnection());
         }
         catch(Exception ex)
         {
@@ -196,7 +191,7 @@ public class AutoMailSending {
                     Integer typeId = types.get(i).getId();
                     
                     // getEmailList
-                    List<Invitee> invitees = dao.GetEmailList(typeId, domainId, startId, endId);
+                    List<Invitee> invitees = dao.GetEmailList(typeId, domainId, config.getStartId(), config.getEndId());
 
                     // collect the invitee
                     if (list.containsKey(domain))
