@@ -127,7 +127,7 @@ DROP PROCEDURE IF EXISTS `get_invitees`//
 CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `get_invitees`(
 typ_id INT UNSIGNED, dmn_id INT UNSIGNED, start_id INT UNSIGNED, end_id INT UNSIGNED)
 BEGIN
-  SELECT nvt_id, nvt_email, nvt_name, nvt_gender, nvtr_email, nvtr_name, nvtr_gender 
+  SELECT nvt_id, nvt_email, nvt_name, nvt_gender, nvtr_email, nvtr_name, nvtr_gender , nvt_typ_id
     FROM invitees_nvt LEFT JOIN relations_rlt ON nvt_id = rlt_nvt_id 
       LEFT JOIN inviters_nvtr ON nvtr_id = rlt_nvtr_id 
     WHERE nvt_disabled = 0 AND nvt_typ_id = typ_id AND nvt_dmn_id = dmn_id 
@@ -185,4 +185,22 @@ DROP PROCEDURE IF EXISTS `clear_email_list`//
 CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `clear_email_list`()
 BEGIN
   TRUNCATE TABLE `sendlist_sndl`;
+END;//
+
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS `build_checklist`//
+CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `build_checklist`(
+vnt_id INT UNSIGNED)
+BEGIN
+  INSERT IGNORE INTO `sendlist_sndl` (`sndl_id`, `sndl_done`) VALUES (vnt_id, '0');
+END;//
+
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS `check_lastrun`//
+CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `check_lastrun`()
+BEGIN
+  SELECT sndl_id FROM  `sendlist_sndl`
+    WHERE sndl_done = 0;
 END;//

@@ -1,12 +1,13 @@
 package com.boryi.compaign.sender;
 
-import java.io.Serializable;
+//import java.io.Serializable;
 
 /**
  * Class to hold Invitee's info
  * @author yang.song
  */
-public class Invitee implements Serializable{
+public class Invitee //implements Serializable
+{
     
     private static final long serialVersionUID = 1L;
     
@@ -18,6 +19,7 @@ public class Invitee implements Serializable{
     private String inviter_name;    //Inviter's name
     private String inviter_email;   //Inviter's email
     private Boolean inviter_gender; //Inviter's gender
+    private int typeId;             // type id
     
     /**
      * @return the id
@@ -140,9 +142,24 @@ public class Invitee implements Serializable{
                 + "; Name: " + this.name
                 + "; Email: " + this.email
                 + "; Domain: " + this.domain
+                + "; TypeId: " + this.typeId
                 + "; Gender: " + this.gender
                 + "; Inviter Name: " + this.inviter_name
                 + "; Inviter Email: " + this.inviter_email
                 + "; Inviter Gender: " + this.inviter_gender;
+    }
+
+    /**
+     * @return the typeId
+     */
+    public int getTypeId() {
+        return typeId;
+    }
+
+    /**
+     * @param typeId the typeId to set
+     */
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 }

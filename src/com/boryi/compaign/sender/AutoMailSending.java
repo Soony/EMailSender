@@ -31,9 +31,11 @@ public class AutoMailSending {
     private Dao dao;
     private Vector<EmailType> types;
     private Config config;
-    private Hashtable<String, List<Invitee>> list;
-    private Hashtable<String, List<Invitee>> failList;
-    private Hashtable<String, List<Invitee>> templist;
+    private Hashtable<String, List<Invitee>> list = new Hashtable<String, List<Invitee>>();
+    private Hashtable<String, List<Invitee>> failList = new Hashtable<String, List<Invitee>>();
+    private Hashtable<String, List<Invitee>> templist = new Hashtable<String, List<Invitee>>();
+    
+    private Vector<Integer> checkList = new Vector<Integer>();
     
     private Boolean needRetry = false;
     private int maxRetry = 3;
@@ -178,6 +180,26 @@ public class AutoMailSending {
         {
             this.types = this.config.getTypes();
             
+            this.checkList = dao.CheckLastRun();
+            
+            if (checkList.size()>0)
+            {
+                // last run failed
+            }
+            else
+            {
+                // clean the checklist
+                dao.CleanChecklist();
+            }
+                
+            
+            
+            
+            
+            
+            
+            
+            
             this.domains = dao.GetDomains(true);
             
             for(Iterator<Integer> iter = this.domains.keySet().iterator(); iter.hasNext();)
@@ -191,22 +213,34 @@ public class AutoMailSending {
                     Integer typeId = types.get(i).getId();
                     
                     // getEmailList
-                    List<Invitee> invitees = dao.GetEmailList(typeId, domainId, config.getStartId(), config.getEndId());
+                    List<Invitee> invitees = dao.GetEmailList(typeId, domainId, config.getStartId(), config.getEndId(), this.checkList);
 
-                    // collect the invitee
-                    if (list.containsKey(domain))
+                    if (invitees.size()>0)
                     {
-                        list.get(domain).addAll(invitees);
-                    }
-                    else
-                    {
-                        list.put(domain, invitees);
+                        // collect the invitee
+                        if (list.containsKey(domain))
+                        {
+                            list.get(domain).addAll(invitees);
+                        }
+                        else
+                        {
+                            list.put(domain, invitees);
+                        }
                     }
                 }   
             }
+            
+            for(Integer id : this.checkList)
+            {
+                dao.BuildChecklist(id);
+            }
+            
+            String text = "";
         }
         catch(Exception ex)
-        {}
+        {
+        
+        }
         
 
         

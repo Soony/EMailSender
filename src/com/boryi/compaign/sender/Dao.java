@@ -5,10 +5,10 @@
 package com.boryi.compaign.sender;
 
 import java.sql.*;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.*;
+import java.lang.Integer;
+import java.util.Vector;
 
 /**
  *
@@ -34,7 +34,7 @@ public class Dao {
      * @return
      */
     public List<Invitee> GetEmailList(
-            int typeId, int domainId, int start, int end)
+            int typeId, int domainId, int start, int end, Vector<Integer> checklist)
     {
         List<Invitee> list = new ArrayList<Invitee>();
         
@@ -68,12 +68,15 @@ public class Dao {
                     invitee.setId(rs.getInt("nvt_id"));
                     invitee.setEmail(rs.getString("nvt_email"));
                     invitee.setName(rs.getString("nvt_name"));
+                    invitee.setTypeId(rs.getInt("nvt_typ_id"));
                     invitee.setGender(rs.getBoolean("nvt_gender"));
                     invitee.setInviter_email(rs.getString("nvtr_email"));
                     invitee.setInviter_name(rs.getString("nvtr_name"));
                     invitee.setInviter_gender(rs.getBoolean("nvtr_gender"));
                     
                     list.add(invitee);
+                    
+                    checklist.add(invitee.getId());
                 }
             }
         }
@@ -181,5 +184,91 @@ public class Dao {
             }
         }
         return list;
+    }
+    
+    
+        /**
+     * Get the types
+     * 
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SQLException  
+     */
+    public void BuildChecklist(int id)
+            throws ClassNotFoundException, SQLException
+    {
+        Class<?> forName = Class.forName("com.mysql.jdbc.Driver");
+
+        Connection conn = DriverManager.getConnection(dbConnStr);
+
+        if(conn.isClosed())
+        {
+            throw new SQLException("Closed connection");
+        }
+
+        CallableStatement sm = conn.prepareCall("{ call build_checklist(?)}");
+        
+        sm.setInt(1, id);
+        
+        sm.execute();
+    }
+    
+    
+            /**
+     * Get the types
+     * 
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SQLException  
+     */
+    public Vector<Integer> CheckLastRun()
+            throws ClassNotFoundException, SQLException
+    {
+        Vector<Integer> list = new Vector<Integer>();
+        
+        Class<?> forName = Class.forName("com.mysql.jdbc.Driver");
+
+        Connection conn = DriverManager.getConnection(dbConnStr);
+
+        if(conn.isClosed())
+        {
+            throw new SQLException("Closed connection");
+        }
+
+        CallableStatement sm = conn.prepareCall("{ call check_lastrun()}");
+        
+        ResultSet rs = sm.executeQuery();
+
+        if (rs != null)
+        {
+            while (rs.next())
+            {
+                list.add(rs.getInt("sndl_id"));
+            }
+        }
+        return list;
+    }
+    
+    /**
+     * Get the types
+     * 
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SQLException  
+     */
+    public void CleanChecklist()
+            throws ClassNotFoundException, SQLException
+    {
+        Class<?> forName = Class.forName("com.mysql.jdbc.Driver");
+
+        Connection conn = DriverManager.getConnection(dbConnStr);
+
+        if(conn.isClosed())
+        {
+            throw new SQLException("Closed connection");
+        }
+
+        CallableStatement sm = conn.prepareCall("{ call clear_email_list()}");
+        sm.execute();
     }
 }
