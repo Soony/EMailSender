@@ -22,7 +22,7 @@ public class SaveLoader {
 
         out.writeObject(invitee);
         
-        out.close();   
+        out.close();
     }
     
     static Invitee Load()

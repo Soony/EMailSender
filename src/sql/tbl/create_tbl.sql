@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `domains_dmn` (
 --
 
 CREATE TABLE IF NOT EXISTS `sendlist_sndl` (
-  `sndl_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Id of the invitees',
+  `sndl_id` INT UNSIGNED NOT NULL COMMENT 'Id of the invitees',
   `sndl_done` TINYINT(1) NOT NULL COMMENT 'If the email has been sent already',
   INDEX (`sndl_id`),
   INDEX (`sndl_done`)

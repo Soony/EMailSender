@@ -8,6 +8,7 @@ import com.sun.mail.imap.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -29,9 +30,12 @@ public class AutoMailSending {
     private String spMarkEmailAsSent;
     private Date runDate;
     private Dao dao;
+    private Vector<EmailType> types;
+    private Config config;
     private Hashtable<String, List<Invitee>> list;
     private Hashtable<String, List<Invitee>> failList;
     private Hashtable<String, List<Invitee>> templist;
+    
     private Boolean needRetry = false;
     private int maxRetry = 3;
     private int retry = 1;
@@ -40,17 +44,16 @@ public class AutoMailSending {
     private int startId;
     private int endId;
     
+    private Hashtable<Integer, String> domains;
+    
     private static Logger eventLogger = Logger.getLogger("EventLogger");
 
     static {
         DOMConfigurator.configure("log4j.xml");
     }
     
-    public static void main(String[] args)
+    public static void main(String[] args) 
     {
-        List hm = new ArrayList();
-        
-        
         AutoMailSending c = new AutoMailSending();
         c.OnRun();
     }
@@ -59,19 +62,9 @@ public class AutoMailSending {
     {
         try
         {
-            Config config = new Config();
+            config = new Config();
             config.read("config.xml");
-
-            mailServerName = config.getMailServerName();
-            mailUserName = config.getMailUserName();
-            mailPassword = config.getMailPassword();
-            emailFormat = config.getEmailFormat();
-            dbConnStr = config.getConnection();
-            spGetEmailList = config.getSpGetEmailList();
-            spMarkEmailAsSent = config.getSpMarkEmailAsSent();
-            emailSubject = config.getEmailSubject();
-            interval = config.getInterval();
-            
+           
             dao = new Dao(dbConnStr);
         }
         catch(Exception ex)
@@ -178,13 +171,56 @@ public class AutoMailSending {
         }
         catch(Exception ex)
         {
-            System.err.println(ex);
+            eventLogger.error(ex);
         }
         
-        String[] args = {dbConnStr, spGetEmailList, spMarkEmailAsSent};
+        // if last time not finished yet
+        // go on the next run
+       
+        // else if new
+        // domain with img
+        try
+        {
+            this.types = this.config.getTypes();
+            
+            this.domains = dao.GetDomains(true);
+            
+            for(Iterator<Integer> iter = this.domains.keySet().iterator(); iter.hasNext();)
+            {
+                // domain Id
+                Integer domainId = iter.next();
+                String domain = this.domains.get(domainId);
+                
+                for (int i = 0; i < types.size(); i++)
+                {
+                    Integer typeId = types.get(i).getId();
+                    
+                    // getEmailList
+                    List<Invitee> invitees = dao.GetEmailList(typeId, domainId, startId, endId);
 
+                    // collect the invitee
+                    if (list.containsKey(domain))
+                    {
+                        list.get(domain).addAll(invitees);
+                    }
+                    else
+                    {
+                        list.put(domain, invitees);
+                    }
+                }   
+            }
+        }
+        catch(Exception ex)
+        {}
+        
 
-//        inviteeList = dao.GetEmailList();
+        
+        // domain without img
+
+        
+        
+//        inviteeList = dao.GetEmailList(typeId, domainId, startId, endId);
+        
 //        failList = new ArrayList<Invitee>();
 //        templist = new ArrayList<Invitee>();
 //        MailMessage(list);

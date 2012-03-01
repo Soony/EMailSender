@@ -24,20 +24,6 @@ public class Dao {
         this.dbConnStr = dbConnStr;
     }
 
-    public Dao(String dbConnStr, String spGetEmailList)
-    {
-        this.dbConnStr = dbConnStr;
-        this.spGetEmailList = spGetEmailList;
-    }
-
-    public Dao(String dbConnStr, String spGetEmailList, String spMarkEmailAsSent)
-    {
-        this.dbConnStr = dbConnStr;
-        this.spGetEmailList = spGetEmailList;
-        this.spMarkEmailAsSent = spMarkEmailAsSent;
-    }
-
-
     /**
      * Get the waiting to be sent email addresses
      * 
@@ -47,10 +33,10 @@ public class Dao {
      * @param end       End id
      * @return
      */
-    public Hashtable<String, List<Invitee>> GetEmailList(
+    public List<Invitee> GetEmailList(
             int typeId, int domainId, int start, int end)
     {
-        Hashtable<String, List<Invitee>> list = new Hashtable<String, List<Invitee>>();
+        List<Invitee> list = new ArrayList<Invitee>();
         
         try 
         {
@@ -87,17 +73,7 @@ public class Dao {
                     invitee.setInviter_name(rs.getString("nvtr_name"));
                     invitee.setInviter_gender(rs.getBoolean("nvtr_gender"));
                     
-                    // collect the invitee
-                    if (list.containsKey(invitee.getDomain()))
-                    {
-                        list.get(invitee.getDomain()).add(invitee);
-                    }
-                    else
-                    {
-                        List<Invitee> newList = new ArrayList<Invitee>();
-                        newList.add(invitee);
-                        list.put(invitee.getDomain(), newList);
-                    }
+                    list.add(invitee);
                 }
             }
         }

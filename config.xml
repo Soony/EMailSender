@@ -1,36 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
-    <mailHost>mail.boryi.com</mailHost>
-    <mailUser>yilong.xie@boryi.com</mailUser>
-    <mailPassword>********</mailPassword>
-    <dbConnStr>jdbc:mysql://localhost/boryi_01_campaign?user=cmpgn_master&amp;password=********</dbConnStr>
-    <Emails>
-        <IntervalSeconds>60</IntervalSeconds>
-        <MaxKey>3</MaxKey>
-        <StartId>1</StartId>
-        <EndId>1000</EndId>    
-        <Types>
-            <Type>
-                <Type>Friend</Type>
-                <Active>true</Active>
-                <emailSubject>Welcome, Dear Friend</emailSubject>
-                <emailBodyWithImg>emailbodyFriendWithImg.htm</emailBodyWithImg>
-                <emailBodyWithoutImg>emailbodyFriendWithoutImg.htm</emailBodyWithoutImg>
-            </Type>
-            <Type>
-                <Type>Subscriber</Type>
-                <Active>true</Active>
-                <emailSubject>Welcome, Dear Subscriber</emailSubject>
-                <emailBodyWithImg>emailbodySubscriberWithImg.htm</emailBodyWithImg>
-                <emailBodyWithoutImg>emailbodySubscriberWithoutImg.htm</emailBodyWithoutImg>
-            </Type>
-            <Type>
-                <Type>Default</Type>
-                <Active>true</Active>
-                <emailSubject>Welcome, Dear User</emailSubject>
-                <emailBodyWithImg>emailbodyWithImg.htm</emailBodyWithImg>
-                <emailBodyWithoutImg>emailbodyWithoutImg.htm</emailBodyWithoutImg>
-            </Type>
-        </Types>
-    </Emails>
+    <MailHost>mail.boryi.com</MailHost>
+    <MailUser>yilong.xie@boryi.com</MailUser>
+    <MailPassword>********</MailPassword>
+    <DbConnStr>jdbc:mysql://localhost/boryi_01_campaign?user=cmpgn_master&amp;password=********</DbConnStr>
+    <IntervalSeconds>60</IntervalSeconds>
+    <MaxKey>3</MaxKey>
+    <StartId>1</StartId>
+    <EndId>1000</EndId>
+    
+    <Type active="true" id="1" name="Friend" emailSubject="Welcome, Dear Friend" 
+            emailBodyWithImg="emailbodyFriendWithImg.htm" 
+            emailBodyWithoutImg="emailbodyFriendWithImg.htm" />
+
+    <Type active="true" id="2" name="Subscriber" emailSubject="Welcome, Dear Subscriber" 
+            emailBodyWithImg="emailbodySubscriberWithImg.htm" 
+            emailBodyWithoutImg="emailbodySubscriberWithoutImg.htm" />
 </settings>

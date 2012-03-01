@@ -11,12 +11,17 @@ import java.net.URISyntaxException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.Vector;
+import javax.lang.model.element.Element;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.SchemaFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 /**
@@ -25,34 +30,30 @@ import org.xml.sax.SAXException;
  */
 public class Config {
     private Document doc;
-   
-    private String mailServerName;
-    private String mailUserName;
+
+    private String mailHost;
+    private String mailUser;
     private String mailPassword;
-    private String csvFile;
-    private String emailFormat;
     private String dbConnStr;
-    private String spGetEmailList;
-    private String spMarkEmailAsSent;
-    private String emailSubject;
-    
     private int interval;
     private int maxKey;
     private int startId;
     private int endId;
     
+    private Vector<EmailType> types;
+    
     /**
      * @return the connection
      */
     public String getConnection() {
-        return dbConnStr;
+        return getDbConnStr();
     }
 
     /**
      * @param connection the connection to set
      */
     public void setConnection(String connection) {
-        this.dbConnStr = connection;
+        this.setDbConnStr(connection);
     }
     
     protected void read(String xml)
@@ -64,52 +65,77 @@ public class Config {
         DocumentBuilder builder = domFactory.newDocumentBuilder();
         
         File xmlFile = new File(xml);
-        doc = builder.parse(xmlFile);
-       
-        setConnection(doc.getElementsByTagName("dbConnStr").item(0).getTextContent());
-        setMailServerName(doc.getElementsByTagName("mailServerName").item(0).getTextContent());
-        setMailUserName(doc.getElementsByTagName("mailUserName").item(0).getTextContent());
-        setMailPassword(doc.getElementsByTagName("mailPassword").item(0).getTextContent());
-        setCsvFile(doc.getElementsByTagName("csvFile").item(0).getTextContent());
+        this.doc = builder.parse(xmlFile);
         
-        setEmailSubject(doc.getElementsByTagName("emailSubject").item(0).getTextContent());
-        setEmailFormat(readFile("tplEmail.html"));
-        
-        setSpGetEmailList(doc.getElementsByTagName("spGetEmailList").item(0).getTextContent());
-        setSpMarkEmailAsSent(doc.getElementsByTagName("spMarkEmailAsSent").item(0).getTextContent());
+        setConnection(doc.getElementsByTagName("DbConnStr").item(0).getTextContent());
+        setMailHost(doc.getElementsByTagName("MailHost").item(0).getTextContent());
+        setMailUser(doc.getElementsByTagName("MailUser").item(0).getTextContent());
+        setMailPassword(doc.getElementsByTagName("MailPassword").item(0).getTextContent());
         setInterval(Integer.valueOf(doc.getElementsByTagName("IntervalSeconds").item(0).getTextContent()));
-        
         setMaxKey(Integer.valueOf(doc.getElementsByTagName("MaxKey").item(0).getTextContent()));
         setStartId(Integer.valueOf(doc.getElementsByTagName("StartId").item(0).getTextContent()));
         setEndId(Integer.valueOf(doc.getElementsByTagName("EndId").item(0).getTextContent()));
+        
+        types = new Vector<EmailType>();
+        
+        NodeList typesNodes = doc.getElementsByTagName("Type");
+        
+        for (int i = 0; i < typesNodes.getLength(); i++)
+        {
+            Node node = typesNodes.item(i);
+            
+            String text = node.getAttributes().getNamedItem("active").getTextContent();
+            
+            if (!Boolean.valueOf(text)){ continue; }
+            
+            types.add(new EmailType(
+                    Integer.valueOf(node.getAttributes().getNamedItem("id").getTextContent()),
+                    node.getAttributes().getNamedItem("name").getTextContent(),
+                    node.getAttributes().getNamedItem("emailSubject").getTextContent(),
+                    node.getAttributes().getNamedItem("emailBodyWithImg").getTextContent(),
+                    node.getAttributes().getNamedItem("emailBodyWithoutImg").getTextContent()));
+        }
+    }
+
+    private static String readFile(String path) throws IOException {
+        FileInputStream stream = new FileInputStream(new File(path));
+        try {
+            FileChannel fc = stream.getChannel();
+            MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+            /* Instead of using default, pass in a decoder. */
+            return Charset.defaultCharset().decode(bb).toString();
+        }
+        finally {
+            stream.close();
+        }
     }
 
     /**
-     * @return the mailServerName
+     * @return the mailHost
      */
-    public String getMailServerName() {
-        return mailServerName;
+    public String getMailHost() {
+        return mailHost;
     }
 
     /**
-     * @param mailServerName the mailServerName to set
+     * @param mailHost the mailHost to set
      */
-    public void setMailServerName(String mailServerName) {
-        this.mailServerName = mailServerName;
+    public void setMailHost(String mailHost) {
+        this.mailHost = mailHost;
     }
 
     /**
-     * @return the mailUserName
+     * @return the mailUser
      */
-    public String getMailUserName() {
-        return mailUserName;
+    public String getMailUser() {
+        return mailUser;
     }
 
     /**
-     * @param mailUserName the mailUserName to set
+     * @param mailUser the mailUser to set
      */
-    public void setMailUserName(String mailUserName) {
-        this.mailUserName = mailUserName;
+    public void setMailUser(String mailUser) {
+        this.mailUser = mailUser;
     }
 
     /**
@@ -127,86 +153,17 @@ public class Config {
     }
 
     /**
-     * @return the csvFile
+     * @return the dbConnStr
      */
-    public String getCsvFile() {
-        return csvFile;
+    public String getDbConnStr() {
+        return dbConnStr;
     }
 
     /**
-     * @param csvFile the csvFile to set
+     * @param dbConnStr the dbConnStr to set
      */
-    public void setCsvFile(String csvFile) {
-        this.csvFile = csvFile;
-    }
-
-    /**
-     * @return the emailFormat
-     */
-    public String getEmailFormat() {
-        return emailFormat;
-    }
-
-    /**
-     * @param emailFormat the emailFormat to set
-     */
-    public void setEmailFormat(String emailFormat) {
-        this.emailFormat = emailFormat;
-    }
-
-    /**
-     * @return the spGetEmailList
-     */
-    public String getSpGetEmailList() {
-        return spGetEmailList;
-    }
-
-    /**
-     * @param spGetEmailList the spGetEmailList to set
-     */
-    public void setSpGetEmailList(String spGetEmailList) {
-        this.spGetEmailList = spGetEmailList;
-    }
-
-    /**
-     * @return the spMarkEmailAsSent
-     */
-    public String getSpMarkEmailAsSent() {
-        return spMarkEmailAsSent;
-    }
-
-    /**
-     * @param spMarkEmailAsSent the spMarkEmailAsSent to set
-     */
-    public void setSpMarkEmailAsSent(String spMarkEmailAsSent) {
-        this.spMarkEmailAsSent = spMarkEmailAsSent;
-    }
-
-    /**
-     * @return the emailSubject
-     */
-    public String getEmailSubject() {
-        return emailSubject;
-    }
-
-    /**
-     * @param emailSubject the emailSubject to set
-     */
-    public void setEmailSubject(String emailSubject) {
-        this.emailSubject = emailSubject;
-    }
-    
-    private static String readFile(String path) throws IOException {
-        FileInputStream stream = new FileInputStream(new File(path));
-        try {
-            FileChannel fc = stream.getChannel();
-            MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-            /* Instead of using default, pass in a decoder. */
-            return Charset.defaultCharset().decode(bb).toString();
-        }
-        finally {
-            stream.close();
-        }
+    public void setDbConnStr(String dbConnStr) {
+        this.dbConnStr = dbConnStr;
     }
 
     /**
@@ -263,5 +220,19 @@ public class Config {
      */
     public void setEndId(int endId) {
         this.endId = endId;
+    }
+
+    /**
+     * @return the types
+     */
+    public Vector<EmailType> getTypes() {
+        return types;
+    }
+
+    /**
+     * @param types the types to set
+     */
+    public void setTypes(Vector<EmailType> types) {
+        this.types = types;
     }
 }
