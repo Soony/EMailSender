@@ -8,6 +8,7 @@ import com.sun.mail.imap.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.lang.Thread;
 import java.sql.SQLException;
 import java.util.*;
 import javax.mail.*;
@@ -15,31 +16,28 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 /**
  *
  * @author yang.song
  */
 public class AutoMailSending {
-    private String mailServerName;//mail server
-    private String mailUserName;//sender's email username
-    private String mailPassword;//sender's email password
-    private String emailFormat;//email's body
-    private String emailSubject;//email's subject
-    private String spGetEmailList;
-    private String spMarkEmailAsSent;
     private Date runDate;
     private Dao dao;
-    private Vector<EmailType> types;
+    private Hashtable<Integer, EmailType> types;
     private Config config;
     private Hashtable<String, List<Invitee>> list = new Hashtable<String, List<Invitee>>();
-    private Hashtable<String, List<Invitee>> failList = new Hashtable<String, List<Invitee>>();
-    private Hashtable<String, List<Invitee>> templist = new Hashtable<String, List<Invitee>>();
     
     private Vector<Integer> checkList = new Vector<Integer>();
-    
-    private Boolean needRetry = false;
-    private int maxRetry = 3;
-    private int retry = 1;
+
     
     private Hashtable<Integer, String> domains;
     
@@ -54,9 +52,59 @@ public class AutoMailSending {
         AutoMailSending c = new AutoMailSending();
         c.OnRun();
     }
+
+    /*
+     * Collect Invitees by domain types - if it displays images
+     */
+    private void CollectInvitees(Boolean displayImage) 
+            throws ClassNotFoundException, SQLException 
+    {
+        this.domains = dao.GetDomains(displayImage);
+        
+        for(Iterator<Integer> iter = domains.keySet().iterator(); iter.hasNext();)
+        {
+            // domain Id
+            Integer domainId = iter.next();
+            String domain = domains.get(domainId);
+            
+            int i = 0;
+            for (Iterator<Integer> itr = types.keySet().iterator(); itr.hasNext();i++)
+            {
+                Integer typeId = itr.next();
+                
+                // getEmailList
+                List<Invitee> invitees = dao.GetEmailList(
+                    typeId, domainId, config.getStartId(), config.getEndId(), 
+                    this.checkList, displayImage);
+
+                if (invitees.size()>0)
+                {
+                    // collect the invitee
+                    if (list.containsKey(domain))
+                    {
+                        list.get(domain).addAll(invitees);
+                    }
+                    else
+                    {
+                        list.put(domain, invitees);
+                    }
+                }
+            }   
+        }
+        
+        for(Integer id : this.checkList)
+        {
+            dao.BuildChecklist(id);
+        }
+    }
     
+    /*
+     * Initilization
+     */
     private void Init() 
     {
+        runDate = new Date();
+        
         try
         {
             config = new Config();
@@ -70,80 +118,50 @@ public class AutoMailSending {
         }
     }
 
-    /// <summary>
-    /// Send email to the receivers in the list collection
-    /// </summary>
-    /// <param name="list">Invitee info list</param>
-    private void MailMessage(List<Invitee> list)
-    {
-        needRetry = false;
-        if (list == null)
-        {
-            return;
-        }
-
-        for (Invitee email : list)
-        {
-            templist.clear();
-            
-            try
-            {
-                SendEmail(email);
-                
-                dao.MarkEmailAsSent(email.getInviter_email(), email.getEmail(), runDate);
-            }
-            catch (Exception ex)
-            {
-                String exs = ex.toString();
-                needRetry = true;
-//                templist.add(email);
-                
-                eventLogger.warn(ex);
-            }
-        }
-    }
-
     private void SendEmail(Invitee email)
             throws MessagingException, NoSuchProviderException {
 
-        String subject = this.emailSubject;
-        String format = this.emailFormat;
+        EmailType emailType = this.types.get(email.getTypeId()); // type id vs index
+
+        String subject = emailType.getSubject();
         
-        Properties props = System.getProperties();
-        // Setup mail server
-        props.setProperty("mail.transport.protocol", "smtp");
-        props.setProperty("mail.smtp.host", this.mailServerName);
-        props.setProperty("mail.smtp.auth", "true");
-        props.setProperty("mail.smtp.starttles.enable", "true");
+        String format = email.getDisplayImage() ? 
+                emailType.getEmailBodyWithImg() : emailType.getEmailBodyWithoutImg();
         
-        //props.setProperty("mail.user", this.mailUserName);
-        //props.setProperty("mail.password", this.mailPassword);
+        Properties props = new Properties();
         
-        Session mailSession = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+        props.put("mail.smtp.starttls.enable", "true"); // added this line
+        props.put("mail.smtp.host", config.getMailHost());
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.auth", "true");
+        
+        
+        Session mailSession = Session.getDefaultInstance(props,
+            new javax.mail.Authenticator() {
             @Override
-            protected PasswordAuthentication getPasswordAuthentication(){
-                return new PasswordAuthentication(mailUserName, mailPassword);
-            };
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(
+                                    config.getMailUser(),
+                                    config.getMailPassword());
+                    }
+            });
+        /*
+        Session mailSession = Session.getDefaultInstance(props,
+                new javax.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(
+                            config.getMailUser(), config.getMailPassword());
+            }
         });
-        //mailSession.setDebug(true);
-        Transport transport = mailSession.getTransport();
+        */
+       
+        Transport transport = mailSession.getTransport("smtp");
 
         MimeMessage message = new MimeMessage(mailSession);
         
-//        subject = emailSubject.replace("{Invitee_firstname}", email.getInvitee_firstname())
-//            .replace("{Invitee_lastname}", email.getInvitee_lastname())
-//            .replace("{Invitee_email}", email.getInvitee_email())
-//            .replace("{Inviter_firstname}", email.getInviter_firstname())
-//            .replace("{Inviter_lastname}", email.getInviter_lastname())
-//            .replace("{Inviter_email}", email.getInviter_email());
-//        format = emailFormat.replace("{Invitee_firstname}", email.getInvitee_firstname())
-//            .replace("{Invitee_lastname}", email.getInvitee_lastname())
-//            .replace("{Invitee_email}", email.getInvitee_email())
-//            .replace("{Inviter_firstname}", email.getInviter_firstname())
-//            .replace("{Inviter_lastname}", email.getInviter_lastname())
-//            .replace("{Inviter_email}", email.getInviter_email());
-        
-        message.setSubject(this.emailSubject);
+        message.setSubject(subject);
         message.setFrom(new InternetAddress(email.getInviter_email()));
         message.setContent(format, "text/html");
         message.addRecipient(Message.RecipientType.TO,
@@ -160,8 +178,6 @@ public class AutoMailSending {
     /// </summary>
     public void OnRun()
     {
-        runDate = new Date();
-        
         try
         {
             Init();
@@ -171,11 +187,6 @@ public class AutoMailSending {
             eventLogger.error(ex);
         }
         
-        // if last time not finished yet
-        // go on the next run
-       
-        // else if new
-        // domain with img
         try
         {
             this.types = this.config.getTypes();
@@ -188,87 +199,104 @@ public class AutoMailSending {
             }
             else
             {
-                // clean the checklist
-                dao.CleanChecklist();
-            }
-                
-            
-            
-            
-            
-            
-            
-            
-            
-            this.domains = dao.GetDomains(true);
-            
-            for(Iterator<Integer> iter = this.domains.keySet().iterator(); iter.hasNext();)
-            {
-                // domain Id
-                Integer domainId = iter.next();
-                String domain = this.domains.get(domainId);
-                
-                for (int i = 0; i < types.size(); i++)
-                {
-                    Integer typeId = types.get(i).getId();
-                    
-                    // getEmailList
-                    List<Invitee> invitees = dao.GetEmailList(typeId, domainId, config.getStartId(), config.getEndId(), this.checkList);
-
-                    if (invitees.size()>0)
-                    {
-                        // collect the invitee
-                        if (list.containsKey(domain))
-                        {
-                            list.get(domain).addAll(invitees);
-                        }
-                        else
-                        {
-                            list.put(domain, invitees);
-                        }
-                    }
-                }   
+                CollectInvitees(true);
+                CollectInvitees(false);
             }
             
-            for(Integer id : this.checkList)
-            {
-                dao.BuildChecklist(id);
-            }
+            SendEmails();
             
-            String text = "";
+            dao.CleanChecklist();
         }
         catch(Exception ex)
         {
+            eventLogger.warn(ex);
+        }
+    }
+    
+    private void SendEmails() throws InterruptedException
+    {
+        Thread[] threads = new Thread[list.keySet().size()];
         
+        int i = 0;
+        for(Iterator<String> itr = list.keySet().iterator(); itr.hasNext(); i++)
+        {
+            final String key = itr.next();
+            
+            threads[i] = new Thread(){
+                @Override
+                public void run(){
+                    
+                    List<Invitee> emailList = list.get(key);
+                    
+                    Date date = new Date();
+                    
+                    while(true)
+                    {
+                        if(emailList.isEmpty())
+                        {
+                            break;
+                        }
+                        
+                        Invitee invitee = emailList.remove(0);
+                        
+                        try 
+                        {
+                            SendEmail(invitee);
+                            
+                            System.out.println(Thread.currentThread().getId() + ": " + invitee);
+                            
+                            synchronized(dao)
+                            {
+                                try 
+                                {
+                                    dao.MarkEmailAsSent(invitee.getId());
+                                }
+                                catch (ClassNotFoundException ex) 
+                                {
+                                    eventLogger.error(ex);
+                                }
+                                catch (SQLException ex) 
+                                {
+                                    eventLogger.error(ex);
+                                }
+                            }
+                        }
+                        catch (MessagingException ex) 
+                        {
+                            eventLogger.warn(ex);
+                        }
+                        
+                        try 
+                        {
+                            Date now = new Date();
+                            long diff = config.getInterval() - (now.getTime() - date.getTime());
+                           
+                            System.out.println(Thread.currentThread().getId() + ": " + diff);
+                            
+                            date = now;
+                            if (diff > 0)
+                            {
+                                // calculate the time
+                                Thread.sleep(diff);
+                            }
+                        }
+                        catch (InterruptedException ex) 
+                        {
+                            eventLogger.error(ex);
+                        }
+                    }  
+                }  
+            };
+        } 
+        
+        for (int j = 0; j < threads.length; j++)
+        {
+            threads[j].start();
         }
         
-
-        
-        // domain without img
-
-        
-        
-//        inviteeList = dao.GetEmailList(typeId, domainId, startId, endId);
-        
-//        failList = new ArrayList<Invitee>();
-//        templist = new ArrayList<Invitee>();
-//        MailMessage(list);
-//
-//        while (needRetry && retry <= maxRetry)
-//        {
-//            retry++;
-//            failList.clear();
-//            failList.addAll(templist);
-//            MailMessage(failList);
-//            //After max retry times output the failed send email address.
-//            if (retry == maxRetry)
-//            {
-//                for (Invitee email : failList)
-//                {
-//                    eventLogger.error("Tried " + maxRetry 
-//                        + " times,Failed to send email to:" + email.getEmail());
-//                }
-//            }
-//        }
+        for (int k = 0; k < threads.length; k++)
+        {
+            threads[k].join();
+        }
     }
 }

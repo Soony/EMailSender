@@ -20,6 +20,7 @@ public class Invitee //implements Serializable
     private String inviter_email;   //Inviter's email
     private Boolean inviter_gender; //Inviter's gender
     private int typeId;             // type id
+    private Boolean displayImage;   // If the domain displays image
     
     /**
      * @return the id
@@ -161,5 +162,19 @@ public class Invitee //implements Serializable
      */
     public void setTypeId(int typeId) {
         this.typeId = typeId;
+    }
+
+    /**
+     * @return the displayImage
+     */
+    public Boolean getDisplayImage() {
+        return displayImage;
+    }
+
+    /**
+     * @param displayImage the displayImage to set
+     */
+    public void setDisplayImage(Boolean displayImage) {
+        this.displayImage = displayImage;
     }
 }

@@ -193,7 +193,9 @@ DROP PROCEDURE IF EXISTS `build_checklist`//
 CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `build_checklist`(
 vnt_id INT UNSIGNED)
 BEGIN
-  INSERT IGNORE INTO `sendlist_sndl` (`sndl_id`, `sndl_done`) VALUES (vnt_id, '0');
+    IF NOT EXISTS (SELECT * FROM `sendlist_sndl` WHERE sndl_id = vnt_id) THEN
+    INSERT INTO `sendlist_sndl` (`sndl_id`, `sndl_done`) VALUES (vnt_id, '0');
+    END IF;
 END;//
 
 
@@ -201,6 +203,17 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `check_lastrun`//
 CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `check_lastrun`()
 BEGIN
-  SELECT sndl_id FROM  `sendlist_sndl`
-    WHERE sndl_done = 0;
+    DELETE FROM sendlist_sndl WHERE sndl_done = 1;
+    SELECT sndl_id FROM  `sendlist_sndl`
+        WHERE sndl_done = 0;
+END;//
+
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS `check_email_sent`//
+CREATE DEFINER=`cmpgn_master`@`localhost` PROCEDURE `check_email_sent`(
+vnt_id INT UNSIGNED)
+BEGIN
+    UPDATE `sendlist_sndl` SET sndl_done = 1
+        WHERE sndl_id = vnt_id;
 END;//

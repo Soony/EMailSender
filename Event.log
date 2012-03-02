@@ -1,6 +1,35 @@
-2012-02-29 13:19:03,125 ERROR | main | com.boryi.compaign.sender.AutoMailSending | 72 | main | java.io.NotSerializableException: com.boryi.compaign.sender.Invitee
-2012-03-01 17:04:47,380 ERROR | main | com.boryi.compaign.sender.AutoMailSending | 72 | Init | org.xml.sax.SAXParseException; systemId: file:/D:/PersonalWork/JavaBots/Email/EMailSender/config.xml; lineNumber: 14; columnNumber: 61; Attribute "EmailBodyWithImg" was already specified for element "Type".
-2012-03-01 17:04:54,936 ERROR | main | com.boryi.compaign.sender.AutoMailSending | 72 | Init | org.xml.sax.SAXParseException; systemId: file:/D:/PersonalWork/JavaBots/Email/EMailSender/config.xml; lineNumber: 14; columnNumber: 61; Attribute "EmailBodyWithImg" was already specified for element "Type".
-2012-03-01 17:05:13,310 ERROR | main | com.boryi.compaign.sender.AutoMailSending | 72 | Init | org.xml.sax.SAXParseException; systemId: file:/D:/PersonalWork/JavaBots/Email/EMailSender/config.xml; lineNumber: 14; columnNumber: 61; Attribute "EmailBodyWithImg" was already specified for element "Type".
-2012-03-01 17:05:49,185 ERROR | main | com.boryi.compaign.sender.AutoMailSending | 72 | Init | org.xml.sax.SAXParseException; systemId: file:/D:/PersonalWork/JavaBots/Email/EMailSender/config.xml; lineNumber: 14; columnNumber: 61; Attribute "EmailBodyWithImg" was already specified for element "Type".
-2012-03-01 17:11:18,974 ERROR | main | com.boryi.compaign.sender.AutoMailSending | 72 | Init | java.lang.NullPointerException
+2012-03-02 13:58:00,852 ERROR | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 257 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 13:58:00,883 ERROR | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 257 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 14:04:56,890 WARN | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:04:56,890 WARN | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:10:29,895 WARN | main | com.boryi.compaign.sender.AutoMailSending | 211 | OnRun | java.lang.ArrayIndexOutOfBoundsException: 4
+2012-03-02 14:11:40,760 WARN | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:11:40,791 WARN | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:12:48,518 WARN | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:12:51,687 WARN | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:17:37,222 WARN | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 266 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:17:39,845 WARN | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 266 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:18:40,470 WARN | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 266 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:19:07,286 WARN | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 266 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:30:05,663 WARN | main | com.boryi.compaign.sender.AutoMailSending | 202 | OnRun | java.lang.NullPointerException
+2012-03-02 14:39:12,304 WARN | Thread-3 | com.boryi.compaign.sender.AutoMailSending$2 | 258 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:39:12,304 WARN | Thread-3 | com.boryi.compaign.sender.AutoMailSending$2 | 258 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:39:12,429 WARN | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 258 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:39:12,304 WARN | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 258 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:39:12,444 WARN | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 258 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:47:49,810 WARN | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 261 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:47:49,810 WARN | Thread-3 | com.boryi.compaign.sender.AutoMailSending$2 | 261 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 14:47:49,825 WARN | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 261 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 15:13:24,750 WARN | Thread-3 | com.boryi.compaign.sender.AutoMailSending$1 | 260 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 15:13:24,766 WARN | Thread-2 | com.boryi.compaign.sender.AutoMailSending$1 | 260 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 15:13:24,766 WARN | Thread-1 | com.boryi.compaign.sender.AutoMailSending$1 | 260 | run | javax.mail.NoSuchProviderException: Invalid protocol: null
+2012-03-02 15:24:41,160 ERROR | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 15:24:41,285 ERROR | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 15:24:55,334 ERROR | Thread-3 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 15:25:53,654 ERROR | Thread-3 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 15:25:59,290 ERROR | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 265 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 15:30:56,104 ERROR | Thread-3 | com.boryi.compaign.sender.AutoMailSending$2 | 264 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 15:30:56,135 ERROR | Thread-1 | com.boryi.compaign.sender.AutoMailSending$2 | 264 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 15:31:10,918 ERROR | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 264 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 15:32:08,411 ERROR | Thread-3 | com.boryi.compaign.sender.AutoMailSending$2 | 264 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 15:32:13,390 ERROR | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 264 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''

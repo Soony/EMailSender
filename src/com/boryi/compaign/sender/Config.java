@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.Hashtable;
 import java.util.Vector;
 import javax.lang.model.element.Element;
 import javax.xml.parsers.DocumentBuilder;
@@ -35,12 +36,12 @@ public class Config {
     private String mailUser;
     private String mailPassword;
     private String dbConnStr;
-    private int interval;
+    private long interval;
     private int maxKey;
     private int startId;
     private int endId;
     
-    private Vector<EmailType> types;
+    private Hashtable<Integer, EmailType> types;
     
     /**
      * @return the connection
@@ -76,7 +77,7 @@ public class Config {
         setStartId(Integer.valueOf(doc.getElementsByTagName("StartId").item(0).getTextContent()));
         setEndId(Integer.valueOf(doc.getElementsByTagName("EndId").item(0).getTextContent()));
         
-        types = new Vector<EmailType>();
+        types = new Hashtable<Integer, EmailType>();
         
         NodeList typesNodes = doc.getElementsByTagName("Type");
         
@@ -87,13 +88,14 @@ public class Config {
             String text = node.getAttributes().getNamedItem("active").getTextContent();
             
             if (!Boolean.valueOf(text)){ continue; }
-            
-            types.add(new EmailType(
-                    Integer.valueOf(node.getAttributes().getNamedItem("id").getTextContent()),
-                    node.getAttributes().getNamedItem("name").getTextContent(),
-                    node.getAttributes().getNamedItem("emailSubject").getTextContent(),
-                    node.getAttributes().getNamedItem("emailBodyWithImg").getTextContent(),
-                    node.getAttributes().getNamedItem("emailBodyWithoutImg").getTextContent()));
+            int id = Integer.valueOf(node.getAttributes().getNamedItem("id").getTextContent());
+            types.put(id,
+                    new EmailType(
+                        id,
+                        node.getAttributes().getNamedItem("name").getTextContent(),
+                        node.getAttributes().getNamedItem("emailSubject").getTextContent(),
+                        node.getAttributes().getNamedItem("emailBodyWithImg").getTextContent(),
+                        node.getAttributes().getNamedItem("emailBodyWithoutImg").getTextContent()));
         }
     }
 
@@ -169,15 +171,15 @@ public class Config {
     /**
      * @return the interval
      */
-    public int getInterval() {
+    public long getInterval() {
         return interval;
     }
 
     /**
      * @param interval the interval to set
      */
-    public void setInterval(int interval) {
-        this.interval = interval;
+    public void setInterval(long intervalSecond) {
+        this.interval = intervalSecond * 1000 ;
     }
 
     /**
@@ -225,14 +227,14 @@ public class Config {
     /**
      * @return the types
      */
-    public Vector<EmailType> getTypes() {
+    public Hashtable<Integer, EmailType> getTypes() {
         return types;
     }
 
     /**
      * @param types the types to set
      */
-    public void setTypes(Vector<EmailType> types) {
+    public void setTypes(Hashtable<Integer, EmailType> types) {
         this.types = types;
     }
 }
