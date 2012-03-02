@@ -105,7 +105,7 @@ public class Dao {
         }
 
         CallableStatement sm = conn.prepareCall(
-            "{ call (?)}");
+            "{ call check_email_sent(?)}");
         sm.setInt(1, id);
         sm.execute();
     }   

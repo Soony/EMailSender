@@ -36,6 +36,7 @@ public class Config {
     private String mailUser;
     private String mailPassword;
     private String dbConnStr;
+
     private long interval;
     private int maxKey;
     private int startId;
@@ -87,7 +88,9 @@ public class Config {
             
             String text = node.getAttributes().getNamedItem("active").getTextContent();
             
+            // skip the inactive ones
             if (!Boolean.valueOf(text)){ continue; }
+            
             int id = Integer.valueOf(node.getAttributes().getNamedItem("id").getTextContent());
             types.put(id,
                     new EmailType(

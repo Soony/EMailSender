@@ -1,10 +1,7 @@
 package com.boryi.compaign.sender;
 
-import java.util.Date;
-import java.util.List;
 import org.apache.log4j.*;
 import com.sun.mail.smtp.*;
-import com.sun.mail.imap.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -32,12 +29,13 @@ import javax.mail.internet.MimeMessage;
 public class AutoMailSending {
     private Date runDate;
     private Dao dao;
-    private Hashtable<Integer, EmailType> types;
     private Config config;
+    
+    private Hashtable<Integer, EmailType> types;
+
     private Hashtable<String, List<Invitee>> list = new Hashtable<String, List<Invitee>>();
     
     private Vector<Integer> checkList = new Vector<Integer>();
-
     
     private Hashtable<Integer, String> domains;
     
@@ -56,11 +54,11 @@ public class AutoMailSending {
     /*
      * Collect Invitees by domain types - if it displays images
      */
-    private void CollectInvitees(Boolean displayImage) 
+    private void CollectInvitees(Boolean displayImage)
             throws ClassNotFoundException, SQLException 
     {
         this.domains = dao.GetDomains(displayImage);
-        
+
         for(Iterator<Integer> iter = domains.keySet().iterator(); iter.hasNext();)
         {
             // domain Id
@@ -104,15 +102,15 @@ public class AutoMailSending {
     private void Init() 
     {
         runDate = new Date();
-        
+
         try
         {
             config = new Config();
             config.read("config.xml");
-           
+
             dao = new Dao(config.getConnection());
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             eventLogger.error(ex);
         }
@@ -146,17 +144,7 @@ public class AutoMailSending {
                                     config.getMailPassword());
                     }
             });
-        /*
-        Session mailSession = Session.getDefaultInstance(props,
-                new javax.mail.Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(
-                            config.getMailUser(), config.getMailPassword());
-            }
-        });
-        */
-       
+        
         Transport transport = mailSession.getTransport("smtp");
 
         MimeMessage message = new MimeMessage(mailSession);
@@ -196,16 +184,20 @@ public class AutoMailSending {
             if (checkList.size()>0)
             {
                 // last run failed
+                
+                list.clear();
             }
             else
             {
+                dao.CleanChecklist();
+                
                 CollectInvitees(true);
                 CollectInvitees(false);
             }
             
             SendEmails();
             
-            dao.CleanChecklist();
+            
         }
         catch(Exception ex)
         {
@@ -230,9 +222,9 @@ public class AutoMailSending {
                     
                     Date date = new Date();
                     
-                    while(true)
+                    while (true)
                     {
-                        if(emailList.isEmpty())
+                        if (emailList.isEmpty())
                         {
                             break;
                         }
