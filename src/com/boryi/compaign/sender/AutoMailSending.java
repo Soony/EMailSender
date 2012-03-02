@@ -41,7 +41,8 @@ public class AutoMailSending {
     
     private static Logger eventLogger = Logger.getLogger("EventLogger");
 
-    static {
+    static 
+    {
         DOMConfigurator.configure("log4j.xml");
     }
     
@@ -88,11 +89,6 @@ public class AutoMailSending {
                     }
                 }
             }   
-        }
-        
-        for(Integer id : this.checkList)
-        {
-            dao.BuildChecklist(id);
         }
     }
     
@@ -183,26 +179,61 @@ public class AutoMailSending {
             
             if (checkList.size()>0)
             {
-                // last run failed
+                Vector<Integer> checkListLastRun = checkList;
                 
-                list.clear();
+                checkList = new Vector<Integer>();
+                
+                CollectInvitees(true);
+                CollectInvitees(false);
+                
+                // lasttime missing some mails
+                RemoveSearched(checkListLastRun);
             }
             else
             {
                 dao.CleanChecklist();
                 
-                CollectInvitees(true);
-                CollectInvitees(false);
+                for(Integer id : this.checkList)
+                {
+                    dao.BuildChecklist(id);
+                }
             }
             
             SendEmails();
-            
-            
         }
         catch(Exception ex)
         {
             eventLogger.warn(ex);
         }
+    }
+    
+    
+    private void RemoveSearched(Vector<Integer> checkListLastRun)
+    {
+        for (Iterator<String> itr = list.keySet().iterator(); itr.hasNext();)
+        {
+            String key = itr.next();
+            List<Invitee> invitees = list.get(key);
+            
+            List<Invitee> newInvitees = new ArrayList<Invitee>();
+            
+            for (Invitee invitee: invitees)
+            {
+                if (checkListLastRun.contains(invitee.getId()))
+                {
+                    newInvitees.add(invitee);
+                }
+            }
+            
+            list.remove(key);
+            
+            if(newInvitees.size() > 0)
+            {
+                list.put(key, newInvitees);
+            }
+        }
+        
+        checkList = checkListLastRun;
     }
     
     private void SendEmails() throws InterruptedException

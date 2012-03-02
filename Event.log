@@ -33,3 +33,6 @@
 2012-03-02 15:31:10,918 ERROR | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 264 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
 2012-03-02 15:32:08,411 ERROR | Thread-3 | com.boryi.compaign.sender.AutoMailSending$2 | 264 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
 2012-03-02 15:32:13,390 ERROR | Thread-2 | com.boryi.compaign.sender.AutoMailSending$2 | 264 | run | com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Incorrect routine name ''
+2012-03-02 16:45:14,640 WARN | main | com.boryi.compaign.sender.AutoMailSending | 206 | OnRun | java.util.ConcurrentModificationException
+2012-03-02 16:47:03,537 WARN | main | com.boryi.compaign.sender.AutoMailSending | 206 | OnRun | java.util.ConcurrentModificationException
+2012-03-02 17:05:33,757 WARN | main | com.boryi.compaign.sender.AutoMailSending | 206 | OnRun | java.util.ConcurrentModificationException
