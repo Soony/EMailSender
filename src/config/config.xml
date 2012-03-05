@@ -12,10 +12,34 @@
     <EndId>1000</EndId>
     
     <Type active="true" id="1" name="Friend" emailSubject="Welcome, Dear Friend" 
-            emailBodyWithImg="emailbodyFriendWithImg.htm" 
+            emailBodyWithImg="emailbodyFriendWithImg.htm"
             emailBodyWithoutImg="emailbodyFriendWithoutImg.htm" />
-
-    <Type active="true" id="2" name="Subscriber" emailSubject="Welcome, Dear Subscriber" 
+            
+    <Type active="true" id="2" name="Subscriber" emailSubject="Welcome, Dear Subscriber"
             emailBodyWithImg="emailbodySubscriberWithImg.htm" 
             emailBodyWithoutImg="emailbodySubscriberWithoutImg.htm" />
+            
+    <Type active="true" id="3" name="Candidate" emailSubject="Welcome, Dear Candidate"
+            emailBodyWithImg="emailbodyCandidateWithImg.htm" 
+            emailBodyWithoutImg="emailbodyCandidateWithoutImg.htm" />
+            
+    <Type active="true" id="4" name="Recruiter" emailSubject="Welcome, Dear Recruiter"
+            emailBodyWithImg="emailbodyRecruiterWithImg.htm" 
+            emailBodyWithoutImg="emailbodyRecruiterWithoutImg.htm" />
+            
+    <Type active="true" id="5" name="Web-seeker" emailSubject="Welcome, Dear Web-seeker"
+            emailBodyWithImg="emailbodyWeb-seekerWithImg.htm" 
+            emailBodyWithoutImg="emailbodyWeb-seekerWithoutImg.htm" />
+            
+    <Type active="true" id="6" name="Web-university" emailSubject="Welcome, Dear Web-university"
+            emailBodyWithImg="emailbodyWebUniversityWithImg.htm" 
+            emailBodyWithoutImg="emailbodyWebUniversityWithoutImg.htm" />
+            
+    <Type active="true" id="7" name="Web-recruiter" emailSubject="Welcome, Dear Web-recruiter"
+            emailBodyWithImg="emailbodyWebRecruiterWithImg.htm" 
+            emailBodyWithoutImg="emailbodyWebRecruiterWithoutImg.htm" />
+            
+    <Type active="true" id="8" name="Web-other" emailSubject="Welcome, Dear User"
+            emailBodyWithImg="emailbodyWebOtherWithImg.htm" 
+            emailBodyWithoutImg="emailbodyWebOtherWithoutImg.htm" />
 </settings>

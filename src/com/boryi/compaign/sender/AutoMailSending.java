@@ -38,6 +38,7 @@ public class AutoMailSending {
     private Vector<Integer> checkList = new Vector<Integer>();
     
     private Hashtable<Integer, String> domains;
+    private Hashtable<String, Date> domainTimers = new Hashtable<String, Date>();
     
     private static Logger eventLogger = Logger.getLogger("EventLogger");
 
@@ -175,29 +176,32 @@ public class AutoMailSending {
         {
             this.types = this.config.getTypes();
             
-            this.checkList = dao.CheckLastRun();
+//            this.checkList = dao.CheckLastRun();
             
-            if (checkList.size()>0)
-            {
-                Vector<Integer> checkListLastRun = checkList;
-                
-                checkList = new Vector<Integer>();
+//            if (checkList.size()>0)
+//            {
+//                Vector<Integer> checkListLastRun = checkList;
+//                
+//                checkList = new Vector<Integer>();
+//                
+//                CollectInvitees(true);
+//                CollectInvitees(false);
+//                
+//                // lasttime missing some mails
+//                RemoveSearched(checkListLastRun);
+//            }
+//            else
+//            {
+                dao.CleanChecklist();
                 
                 CollectInvitees(true);
                 CollectInvitees(false);
-                
-                // lasttime missing some mails
-                RemoveSearched(checkListLastRun);
-            }
-            else
-            {
-                dao.CleanChecklist();
                 
                 for(Integer id : this.checkList)
                 {
                     dao.BuildChecklist(id);
                 }
-            }
+//            }
             
             SendEmails();
         }
@@ -238,88 +242,73 @@ public class AutoMailSending {
     
     private void SendEmails() throws InterruptedException
     {
-        Thread[] threads = new Thread[list.keySet().size()];
-        
         int i = 0;
-        for(Iterator<String> itr = list.keySet().iterator(); itr.hasNext(); i++)
+        
+        while (!list.isEmpty())
         {
-            final String key = itr.next();
-            
-            threads[i] = new Thread(){
-                @Override
-                public void run(){
+            for (Iterator<String> itr = list.keySet().iterator(); itr.hasNext(); i++)
+            {
+                String domain = itr.next();
+                
+                System.out.println("Checking: " + domain);
+
+                List<Invitee> emailList = list.get(domain);
+                
+                if (emailList == null || emailList.isEmpty())
+                {
+                    list.remove(domain);
+                    domainTimers.remove(domain);
+                    System.out.println("Remove: " + domain);
                     
-                    List<Invitee> emailList = list.get(key);
-                    
-                    Date date = new Date();
-                    
-                    while (true)
+                    // list modified
+                    break;
+                }
+                else
+                {
+                    // ready to send email
+                    Date startTime = null;
+                    if (domainTimers.get(domain) != null)
                     {
-                        if (emailList.isEmpty())
+                        startTime = domainTimers.get(domain);
+                        Date now = new Date();
+                        long diff = config.getInterval() - (now.getTime() - startTime.getTime());
+
+                        if (diff > 0)
                         {
-                            break;
+                            System.out.println("Wait for: " + diff);
+                            continue; 
                         }
+                    }
+
+                    Invitee invitee = emailList.remove(0);    
+
+                    System.out.println("Get invitee: " + invitee);
+                    
+                    try 
+                    {
+                        SendEmail(invitee);
                         
-                        Invitee invitee = emailList.remove(0);
-                        
+                        this.domainTimers.put(domain, new Date());
+
                         try 
                         {
-                            SendEmail(invitee);
-                            
-                            System.out.println(Thread.currentThread().getId() + ": " + invitee);
-                            
-                            synchronized(dao)
-                            {
-                                try 
-                                {
-                                    dao.MarkEmailAsSent(invitee.getId());
-                                }
-                                catch (ClassNotFoundException ex) 
-                                {
-                                    eventLogger.error(ex);
-                                }
-                                catch (SQLException ex) 
-                                {
-                                    eventLogger.error(ex);
-                                }
-                            }
+                            dao.MarkEmailAsSent(invitee.getId());
                         }
-                        catch (MessagingException ex) 
-                        {
-                            eventLogger.warn(ex);
-                        }
-                        
-                        try 
-                        {
-                            Date now = new Date();
-                            long diff = config.getInterval() - (now.getTime() - date.getTime());
-                           
-                            System.out.println(Thread.currentThread().getId() + ": " + diff);
-                            
-                            date = now;
-                            if (diff > 0)
-                            {
-                                // calculate the time
-                                Thread.sleep(diff);
-                            }
-                        }
-                        catch (InterruptedException ex) 
+                        catch (ClassNotFoundException ex) 
                         {
                             eventLogger.error(ex);
                         }
-                    }  
-                }  
-            };
-        } 
-        
-        for (int j = 0; j < threads.length; j++)
-        {
-            threads[j].start();
-        }
-        
-        for (int k = 0; k < threads.length; k++)
-        {
-            threads[k].join();
+                        catch (SQLException ex) 
+                        {
+                            eventLogger.error(ex);
+                        }
+                    }//Messaging
+                    catch (Exception ex) 
+                    {
+                        eventLogger.warn(ex);
+                    }
+                }
+            }
         }
     }
 }
